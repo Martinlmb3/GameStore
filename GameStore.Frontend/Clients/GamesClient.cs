@@ -2,8 +2,9 @@ using GameStore.Frontend.Models;
 
 namespace GameStore.Frontend.Clients;
 
-public class GamesClient
+public class GamesClient(HttpClient httpClient)
 {
+    public async Task<GameSummary[]> GetGamesAsync() => await httpClient.GetFromJsonAsync<GameSummary[]>("games") ?? [];
     private readonly List<GameSummary> games =
     [
         new GameSummary()
@@ -32,7 +33,7 @@ public class GamesClient
         }
     ];
 
-    private readonly Genre[] genres = new GenresClient().GetGenres();
+    private readonly Genre[] genres = new GenresClient(httpClient).GetGenres();
 
     public GameSummary[] GetGames() => [.. games];
 
@@ -83,7 +84,7 @@ public class GamesClient
         ArgumentNullException.ThrowIfNull(game);
         return game;
     }
-    public void deleteGame(int id)
+    public void DeleteGame(int id)
     {
         var game = GetGameSummaryById(id);
         games.Remove(game);
